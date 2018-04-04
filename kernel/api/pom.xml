@@ -106,5 +106,71 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>jna</groupId>
+      <artifactId>jna</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-biometrics</groupId>
+      <artifactId>neurotec-biometrics</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-biometrics-client</groupId>
+      <artifactId>neurotec-biometrics-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-core</groupId>
+      <artifactId>neurotec-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-devices</groupId>
+      <artifactId>neurotec-devices</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-licensing</groupId>
+      <artifactId>neurotec-licensing</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-media</groupId>
+      <artifactId>neurotec-media</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>neurotec-media-processing</groupId>
+      <artifactId>neurotec-media-processing</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>nmedia</groupId>
+      <artifactId>nmedia</artifactId>
+      <scope>runtime</scope>
+      <type>dll</type>
+    </dependency>
+
+    <dependency>
+      <groupId>ncore</groupId>
+      <artifactId>ncore</artifactId>
+      <scope>runtime</scope>
+      <type>dll</type>
+    </dependency>
+
+    <dependency>
+      <groupId>nlicensing</groupId>
+      <artifactId>nlicensing</artifactId>
+      <scope>runtime</scope>
+      <type>dll</type>
+    </dependency>
   </dependencies>
 </project>

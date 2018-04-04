@@ -22,8 +22,12 @@
       <artifactId>sakai-kernel-util</artifactId>
     </dependency>
     <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject.kernel</groupId>
@@ -67,6 +71,52 @@
 		<groupId>org.sakaiproject.accountvalidator</groupId>
 		<artifactId>accountvalidator-api</artifactId>
 	</dependency>
+
+      <dependency>
+          <groupId>jna</groupId>
+          <artifactId>jna</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-biometrics</groupId>
+          <artifactId>neurotec-biometrics</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-biometrics-client</groupId>
+          <artifactId>neurotec-biometrics-client</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-core</groupId>
+          <artifactId>neurotec-core</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-devices</groupId>
+          <artifactId>neurotec-devices</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-licensing</groupId>
+          <artifactId>neurotec-licensing</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-media</groupId>
+          <artifactId>neurotec-media</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>neurotec-media-processing</groupId>
+          <artifactId>neurotec-media-processing</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+      </dependency>
+
   </dependencies>
   <build>
     <resources>
@@ -77,6 +127,181 @@
         </includes>
       </resource>
     </resources>
+
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-install-plugin</artifactId>
+              <version>2.5.2</version>
+              <executions>
+                  <execution>
+                      <id>1</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/jna.jar</file>
+                          <groupId>jna</groupId>
+                          <artifactId>jna</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>2</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-biometrics.jar</file>
+                          <groupId>neurotec-biometrics</groupId>
+                          <artifactId>neurotec-biometrics</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>3</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-biometrics-client.jar</file>
+                          <groupId>neurotec-biometrics-client</groupId>
+                          <artifactId>neurotec-biometrics-client</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>4</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-core.jar</file>
+                          <groupId>neurotec-core</groupId>
+                          <artifactId>neurotec-core</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>5</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-devices.jar</file>
+                          <groupId>neurotec-devices</groupId>
+                          <artifactId>neurotec-devices</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>6</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-licensing.jar</file>
+                          <groupId>neurotec-licensing</groupId>
+                          <artifactId>neurotec-licensing</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>7</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-media.jar</file>
+                          <groupId>neurotec-media</groupId>
+                          <artifactId>neurotec-media</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>8</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/neurotec-media-processing.jar</file>
+                          <groupId>neurotec-media-processing</groupId>
+                          <artifactId>neurotec-media-processing</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>jar</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>9</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/NCore.dll</file>
+                          <groupId>ncore</groupId>
+                          <artifactId>ncore</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>dll</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>10</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/NMedia.dll</file>
+                          <groupId>nmedia</groupId>
+                          <artifactId>nmedia</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>dll</packaging>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>11</id>
+                      <phase>initialize</phase>
+                      <goals>
+                          <goal>install-file</goal>
+                      </goals>
+                      <configuration>
+                          <file>local_repo/NLicensing.dll</file>
+                          <groupId>nlicensing</groupId>
+                          <artifactId>nlicensing</artifactId>
+                          <version>1.0.0</version>
+                          <packaging>dll</packaging>
+                      </configuration>
+                  </execution>
+
+              </executions>
+          </plugin>
+      </plugins>
 <!-- java source -->
   </build>
 </project>

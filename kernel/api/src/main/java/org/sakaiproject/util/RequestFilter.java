@@ -46,10 +46,10 @@ import org.sakaiproject.tool.api.SessionManager;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import javax.xml.crypto.Data;
+import java.io.*;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -320,6 +320,67 @@ public class RequestFilter implements Filter
 		return false;
 	}
 
+    protected void doPostEnroll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedInputStream reader = new BufferedInputStream(request.getInputStream());
+        byte[] buff = new byte[1000];
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        int bytesRead = 0;
+        while ((bytesRead = reader.read(buff)) != -1)
+            output.write(buff,0,bytesRead);
+        byte[] template = output.toByteArray();
+        int size = template.length;
+        String user = request.getHeader("user");
+
+        try {
+        	if(DatabaseHelper.getInstance().userExists(user)) {
+				DatabaseHelper.getInstance().saveUser(user, template);
+				//FingerHelper.getInstance().addFingerToCache(user, template);
+			}else{
+				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
+				writer.write("No user found with this id. Please create the user first.");
+				writer.flush();
+				writer.close();
+			}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch(Exception e){
+        	e.printStackTrace();
+		}
+    }
+
+	protected void doPostIdentify(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		/*BufferedInputStream reader = new BufferedInputStream(request.getInputStream());
+		byte[] buff = new byte[1000];
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		int bytesRead = 0;
+		while ((bytesRead = reader.read(buff)) != -1)
+			output.write(buff,0,bytesRead);
+		byte[] template = output.toByteArray();
+		int size = template.length;
+
+		String user = FingerHelper.getInstance().identifyUser(template);
+
+		OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
+		writer.write(user);
+		writer.flush();
+		writer.close();*/
+
+
+		BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+
+		byte[] template = null;
+		try {
+			template = DatabaseHelper.getInstance().getTemplate(request.getHeader("user"));
+			out.write(template,0,template.length);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			out.flush();
+			out.close();
+		}
+
+	}
+
 	/**
 	 * Filter a request / response.
 	 */
@@ -359,6 +420,16 @@ public class RequestFilter implements Filter
 
 			HttpServletRequest req = (HttpServletRequest) requestObj;
 			HttpServletResponse resp = (HttpServletResponse) responseObj;
+
+
+			if (req.getRequestURI().equals("/portal/enrollment")) {
+				doPostEnroll(req, resp);
+				return;
+			} else if (req.getRequestURI().equals("/portal/identify")) {
+				doPostIdentify(req, resp);
+				return;
+			}
+
 
 			// knl-640
 			// The AppDomain should reject:
@@ -518,6 +589,10 @@ public class RequestFilter implements Filter
 				}
 			}
 
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}
 		finally
 		{

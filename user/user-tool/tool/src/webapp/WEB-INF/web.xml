@@ -35,6 +35,22 @@
         <dispatcher>INCLUDE</dispatcher>
     </filter-mapping>
 
+    <filter-mapping>
+        <filter-name>sakai.request</filter-name>
+        <url-pattern>/enrollment</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>sakai.request</filter-name>
+        <url-pattern>/identify</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+
 	<!-- the vm handling servlet : used direct by name, not by URL path -->
 	<servlet>
 		<servlet-name>
@@ -91,6 +107,7 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
      </servlet>
+
 
     <listener>
         <listener-class>org.sakaiproject.util.ToolListener</listener-class>

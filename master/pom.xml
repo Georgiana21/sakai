@@ -105,6 +105,7 @@
     <sakai.spatial4j.version>0.4.1</sakai.spatial4j.version>
     <sakai.groovy.version>2.4.4</sakai.groovy.version>
     <sakai.jna.version>4.1.0</sakai.jna.version>
+    <localRepo.version>1.0.0</localRepo.version>
     <sakai.antlr-runtime.version>3.5</sakai.antlr-runtime.version>
     <sakai.asm.version>4.1</sakai.asm.version>
     <sakai.spring.groupId>org.springframework</sakai.spring.groupId>
@@ -284,7 +285,7 @@
       <id>central</id>
       <name>Maven Repository Switchboard</name>
       <layout>default</layout>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>https://repo1.maven.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -367,6 +368,12 @@
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.4</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
         <scope>provided</scope>
       </dependency>
       <!-- parser API inconsistancies -->
@@ -1021,6 +1028,84 @@
         <version>${sakai.jna.version}</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-biometrics</groupId>
+        <artifactId>neurotec-biometrics</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-biometrics-client</groupId>
+        <artifactId>neurotec-biometrics-client</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-core</groupId>
+        <artifactId>neurotec-core</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-devices</groupId>
+        <artifactId>neurotec-devices</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-licensing</groupId>
+        <artifactId>neurotec-licensing</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-media</groupId>
+        <artifactId>neurotec-media</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>neurotec-media-processing</groupId>
+        <artifactId>neurotec-media-processing</artifactId>
+        <version>${localRepo.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.5</version>
+      </dependency>
+
+      <dependency>
+        <groupId>nmedia</groupId>
+        <artifactId>nmedia</artifactId>
+        <version>${localRepo.version}</version>
+        <scope>runtime</scope>
+        <type>dll</type>
+      </dependency>
+
+      <dependency>
+        <groupId>ncore</groupId>
+        <artifactId>ncore</artifactId>
+        <version>${localRepo.version}</version>
+        <scope>runtime</scope>
+        <type>dll</type>
+      </dependency>
+
+      <dependency>
+        <groupId>nlicensing</groupId>
+        <artifactId>nlicensing</artifactId>
+        <version>${localRepo.version}</version>
+        <scope>runtime</scope>
+        <type>dll</type>
+      </dependency>
+
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>

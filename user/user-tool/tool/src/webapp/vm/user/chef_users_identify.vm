@@ -1,0 +1,17 @@
+## $Header: /cvs/sakai2/legacy/tools/src/webapp/vm/admin/chef_users_view.vm,v 1.2 2005/05/24 19:36:12 gsilver.umich.edu Exp $
+#javascript("/library/js/spinner.js")
+<div class="portletBody">
+    #if($menu)
+        #toolbar($menu)
+    #end
+
+    <h3>
+        $tlang.getString("useridentify.heading")
+    </h3>
+
+    <form name="user-identify" id="user-identify" action="#toolForm("$action")" method="post" autocomplete="on">
+        <applet code=org.sakaiproject.user.tool.IdentifyApplet.class archive='neurotec-biometrics-1.0.0.jar, neurotec-biometrics-client-1.0.0.jar, neurotec-core-1.0.0.jar,neurotec-devices-1.0.0.jar,neurotec-media-1.0.0.jar, neurotec-licensing-1.0.0.jar, neurotec-media-processing-1.0.0.jar, jna-1.0.0.jar, NCore.dll'
+                codebase='http://localhost:8080/res/' width='700' height='500'>
+            Cannot load applet...
+        </applet>
+    </form>

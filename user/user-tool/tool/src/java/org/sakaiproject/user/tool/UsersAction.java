@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.neurotec.biometrics.client.NBiometricClient;
 import lombok.extern.slf4j.Slf4j;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
@@ -347,6 +348,14 @@ public class UsersAction extends PagedResourceActionII
 			//returning from helper after uploading file
 			template = buildProcessImportContext(state, rundata, context);
 		}
+		else if(mode.equals("enroll"))
+		{
+			template = buildEnrollContext(state, context);
+		}
+		else if(mode.equals("identify"))
+		{
+			template = buildIdentifyContext(state, context);
+		}
 		else
 		{
 		 	log.warn("UsersAction: mode: {}", mode);
@@ -374,6 +383,8 @@ public class UsersAction extends PagedResourceActionII
 		if (UserDirectoryService.allowAddUser())
 		{
 			bar.add(new MenuEntry(rb.getString("useact.newuse"), null, true, MenuItem.CHECKED_NA, "doNew"));
+			bar.add(new MenuEntry(rb.getString("useact.enroll"), null, true, MenuItem.CHECKED_NA, "doEnroll"));
+			bar.add(new MenuEntry(rb.getString("useact.identify"), null, true, MenuItem.CHECKED_NA, "doIdentify"));
 			bar.add(new MenuEntry(rb.getString("import.user.file"), null, true, MenuItem.CHECKED_NA, "doImport"));
 		}
 
@@ -598,6 +609,62 @@ public class UsersAction extends PagedResourceActionII
 	} // buildEditContext
 
 	/**
+	 * Build the context for the enroll mode.
+	 */
+	private String buildEnrollContext(SessionState state, Context context)
+	{
+		// build the menu
+		Menu bar = new MenuImpl();
+		if (UserDirectoryService.allowAddUser())
+		{
+			bar.add(new MenuEntry(rb.getString("useact.newuse"), null, true, MenuItem.CHECKED_NA, "doNew"));
+			bar.add(new MenuEntry(rb.getString("useact.enroll"), null, true, MenuItem.CHECKED_NA, "doEnroll"));
+			bar.add(new MenuEntry(rb.getString("useact.identify"), null, true, MenuItem.CHECKED_NA, "doIdentify"));
+			bar.add(new MenuEntry(rb.getString("import.user.file"), null, true, MenuItem.CHECKED_NA, "doImport"));
+		}
+		// add the search commands
+		addSearchMenus(bar, state, rb.getString("useact.search"));
+
+		// add the refresh commands
+		addRefreshMenus(bar, state);
+
+		if (bar.size() > 0)
+		{
+			context.put(Menu.CONTEXT_MENU, bar);
+		}
+
+		return "_enroll";
+	} // buildEnrollContext
+
+	/**
+	 * Build the context for the identify mode.
+	 */
+	private String buildIdentifyContext(SessionState state, Context context)
+	{
+		// build the menu
+		Menu bar = new MenuImpl();
+		if (UserDirectoryService.allowAddUser())
+		{
+			bar.add(new MenuEntry(rb.getString("useact.newuse"), null, true, MenuItem.CHECKED_NA, "doNew"));
+			bar.add(new MenuEntry(rb.getString("useact.enroll"), null, true, MenuItem.CHECKED_NA, "doEnroll"));
+			bar.add(new MenuEntry(rb.getString("useact.identify"), null, true, MenuItem.CHECKED_NA, "doIdentify"));
+			bar.add(new MenuEntry(rb.getString("import.user.file"), null, true, MenuItem.CHECKED_NA, "doImport"));
+		}
+		// add the search commands
+		addSearchMenus(bar, state, rb.getString("useact.search"));
+
+		// add the refresh commands
+		addRefreshMenus(bar, state);
+
+		if (bar.size() > 0)
+		{
+			context.put(Menu.CONTEXT_MENU, bar);
+		}
+
+		return "_identify";
+	} // buildEnrollContext
+
+	/**
 	 * Build the context for the view user mode.
 	 */
 	private String buildViewContext(SessionState state, Context context)
@@ -751,6 +818,25 @@ public class UsersAction extends PagedResourceActionII
 		disableObservers(state);
 
 	} // doNew
+
+	/**
+	 * doEnroll called when "eventSubmit_doEnroll" is in the request parameters to add a new user
+	 */
+	public void doEnroll(RunData data, Context context)
+	{
+		SessionState state = ((JetspeedRunData) data).getPortletSessionState(((JetspeedRunData) data).getJs_peid());
+		state.setAttribute("mode", "enroll");
+		//NBiometricClient biometricClient = new NBiometricClient();
+	} // doEnroll
+
+	/**
+	 * doIdentify called when "eventSubmit_doIdentify" is in the request parameters to add a new user
+	 */
+	public void doIdentify(RunData data, Context context)
+	{
+		SessionState state = ((JetspeedRunData) data).getPortletSessionState(((JetspeedRunData) data).getJs_peid());
+		state.setAttribute("mode", "identify");
+	} // doIdentify
 
 	/**
 	 * doImport called when "eventSubmit_doImport" is clicked. This actuall imports the users that were uploaded.
