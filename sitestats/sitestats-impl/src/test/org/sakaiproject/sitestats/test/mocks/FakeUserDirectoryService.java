@@ -96,6 +96,11 @@ public class FakeUserDirectoryService implements UserDirectoryService {
 		return null;
 	}
 
+	public User authenticate(String arg0, String arg1, String arg2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public void cancelEdit(UserEdit arg0) {
 		// TODO Auto-generated method stub
 

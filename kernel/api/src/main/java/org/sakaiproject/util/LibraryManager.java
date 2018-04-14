@@ -19,7 +19,7 @@ public final class LibraryManager {
     // ===========================================================
 
     public static void initLibraryPath() {
-        String libraryPath = "D:\\disertatie\\Neurotec_Biometric_10_0_SDK_Trial\\Bin\\Win32_x86";//getLibraryPath();
+        String libraryPath = "D:\\disertatie\\Neurotec_Biometric_10_0_SDK_Trial\\Bin\\Win32_x86_1";//getLibraryPath();
         String jnaLibraryPath = System.getProperty("jna.library.path");
         if (jnaLibraryPath == null || "".equals(jnaLibraryPath)) {
             System.setProperty("jna.library.path", libraryPath.toString());

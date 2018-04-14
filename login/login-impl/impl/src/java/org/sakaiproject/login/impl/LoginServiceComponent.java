@@ -20,12 +20,15 @@
  **********************************************************************************/
 package org.sakaiproject.login.impl;
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 
+import javafx.util.Pair;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.event.api.UsageSessionService;
@@ -39,6 +42,7 @@ import org.sakaiproject.user.api.Authentication;
 import org.sakaiproject.user.api.AuthenticationException;
 import org.sakaiproject.user.api.Evidence;
 import org.sakaiproject.user.api.AuthenticationManager;
+import org.sakaiproject.util.DatabaseHelper;
 import org.sakaiproject.util.IdPwEvidence;
 
 
@@ -65,11 +69,31 @@ public abstract class LoginServiceComponent implements LoginService {
 		// authenticate
 		try
 		{
-			String eid = credentials.getIdentifier();
-			String pw = credentials.getPassword();
+			String code = credentials.getCode();
+			String eid = null;
+			String pw = null;
+			if(!code.isEmpty()){
+				try {
+					Pair<String, Timestamp> eidAndTimestamp = DatabaseHelper.getInstance().getEidAndTimestamp(code);
+					if(eidAndTimestamp.getKey().equals(""))
+						throw new LoginException(Login.EXCEPTION_INVALID_CODE);
+					Timestamp now = new Timestamp(System.currentTimeMillis());
+					long minutes = (now.getTime() - eidAndTimestamp.getValue().getTime())/ (60 * 1000);
+					if(minutes > 10)
+						throw new LoginException(Login.EXCEPTION_EXPIRED_CODE);
+					eid = eidAndTimestamp.getKey();
+				} catch (SQLException e) {
+					eid = "";
+					pw = "";
+				}
+			}else {
+				eid = credentials.getIdentifier();
+				pw = credentials.getPassword();
+			}
 			
 			boolean isEidEmpty = (eid == null) || (eid.length() == 0);
 			boolean isPwEmpty = (pw == null) || (pw.length() == 0);
+			boolean isCodeEmpty = (code == null) || (code.length() == 0);
 			
 			if (isAdvisorEnabled) {
 				if (!loginAdvisor.checkCredentials(credentials)) {
@@ -77,7 +101,7 @@ public abstract class LoginServiceComponent implements LoginService {
 				}
 			}
 			
-			if (isEidEmpty || isPwEmpty)
+			if (isCodeEmpty && (isEidEmpty || isPwEmpty))
 			{
 				throw new AuthenticationException("missing-fields");
 			}
@@ -85,7 +109,7 @@ public abstract class LoginServiceComponent implements LoginService {
 			// Do NOT trim the password, since many authentication systems allow whitespace.
 			eid = eid.trim();
 
-			Evidence e = new IdPwEvidence(eid, pw);
+			Evidence e = new IdPwEvidence(eid, pw, code);
 
 			Authentication a = authenticationManager().authenticate(e);
 

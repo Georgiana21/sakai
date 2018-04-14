@@ -1604,6 +1604,40 @@ public abstract class BaseUserDirectoryService implements UserDirectoryService, 
 	 *
 	 * <b>WARNING:</b> Do not call this method directly! Use {@link AuthenticationManager#authenticate(org.sakaiproject.user.api.Evidence)}
 	 */
+	public User authenticate(String loginId, String password, String code)
+	{
+		loginId = cleanEid(loginId);
+		if (loginId == null) return null;
+
+		UserEdit user = null;
+		boolean authenticateWithProviderFirst = (m_provider != null) && m_provider.authenticateWithProviderFirst(loginId);
+
+		if (authenticateWithProviderFirst)
+		{
+			user = getProviderAuthenticatedUser(loginId, password);
+			if (user != null) return user;
+		}
+
+		if(code.isEmpty())
+			user = getInternallyAuthenticatedUser(loginId, password);
+		else {
+			try {
+				user = (UserEdit)getUserByEid(loginId);
+			} catch (UserNotDefinedException e) {
+				user = null;
+			}
+		}
+
+		if (user != null) return user;
+
+		if ((m_provider != null) && !authenticateWithProviderFirst)
+		{
+			return getProviderAuthenticatedUser(loginId, password);
+		}
+
+		return null;
+	}
+
 	public User authenticate(String loginId, String password)
 	{
 		loginId = cleanEid(loginId);
@@ -1619,6 +1653,7 @@ public abstract class BaseUserDirectoryService implements UserDirectoryService, 
 		}
 
 		user = getInternallyAuthenticatedUser(loginId, password);
+
 		if (user != null) return user;
 
 		if ((m_provider != null) && !authenticateWithProviderFirst)

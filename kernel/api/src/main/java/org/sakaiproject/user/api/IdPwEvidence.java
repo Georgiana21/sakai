@@ -41,4 +41,6 @@ public interface IdPwEvidence extends Evidence
 	 * @return The password.
 	 */
 	String getPassword();
+
+	String getCode();
 }

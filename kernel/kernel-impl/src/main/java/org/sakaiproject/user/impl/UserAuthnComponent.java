@@ -91,11 +91,12 @@ public abstract class UserAuthnComponent implements AuthenticationManager
 			IdPwEvidence evidence = (IdPwEvidence) e;
 
 			// reject null or blank
-			if ((evidence.getPassword() == null) || (evidence.getPassword().trim().length() == 0)
-					|| (evidence.getIdentifier() == null) || (evidence.getIdentifier().trim().length() == 0))
-			{
-				throw new AuthenticationException("Invalid Login: Either identifier or password empty.");
-			}
+			if(evidence.getCode() == null || evidence.getCode().length() == 0)
+				if ((evidence.getPassword() == null) || (evidence.getPassword().trim().length() == 0)
+						|| (evidence.getIdentifier() == null) || (evidence.getIdentifier().trim().length() == 0))
+				{
+					throw new AuthenticationException("Invalid Login: Either identifier or password empty.");
+				}
 			
 			// Check the cache. If repeat authentication failures are being throttled,
 			// an immediate AuthenticationException might be thrown here.
@@ -105,7 +106,7 @@ public abstract class UserAuthnComponent implements AuthenticationManager
 			}
 
 			// the evidence id must match a defined User
-			User user = userDirectoryService().authenticate(evidence.getIdentifier(), evidence.getPassword());
+			User user = userDirectoryService().authenticate(evidence.getIdentifier(), evidence.getPassword(), evidence.getCode());
 			if (user == null)
 			{
 				authenticationCache().putAuthenticationFailure(evidence.getIdentifier(), evidence.getPassword());
@@ -120,7 +121,9 @@ public abstract class UserAuthnComponent implements AuthenticationManager
 			rv = new org.sakaiproject.util.Authentication(user.getId(), user.getEid());
 			
 			// Cache the authentication.
-			authenticationCache().putAuthentication(evidence.getIdentifier(), evidence.getPassword(), rv);
+			if(evidence.getIdentifier() != null && evidence.getIdentifier().length() !=0 &&
+					evidence.getPassword() != null && evidence.getPassword().length() != 0)
+				authenticationCache().putAuthentication(evidence.getIdentifier(), evidence.getPassword(), rv);
 			
 			return rv;
 		}

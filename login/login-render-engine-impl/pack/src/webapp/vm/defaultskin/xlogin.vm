@@ -22,6 +22,9 @@
     			#if (${loginAdvice})
     				<aside>${loginAdvice}</aside>
     			#end
+				<label>${loginOr}</label> <br>
+				<label for="code">${loginCode}</label>
+				<input name="code" id="code" value="${code}" type="text" size="5"/>
     			<p class="buttons">
     			#if (${doCancel})
     				<input name="submit" type="submit" id="submit" class="loginsubmit" value="${loginWording}"/>

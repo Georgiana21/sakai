@@ -327,6 +327,8 @@ public class RequestFilter implements Filter
         int bytesRead = 0;
         while ((bytesRead = reader.read(buff)) != -1)
             output.write(buff,0,bytesRead);
+        reader.close();
+
         byte[] template = output.toByteArray();
         int size = template.length;
         String user = request.getHeader("user");
@@ -334,7 +336,7 @@ public class RequestFilter implements Filter
         try {
         	if(DatabaseHelper.getInstance().userExists(user)) {
 				DatabaseHelper.getInstance().saveUser(user, template);
-				//FingerHelper.getInstance().addFingerToCache(user, template);
+				FingerHelper.getInstance().addFingerToCache(user, template);
 			}else{
 				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
 				writer.write("No user found with this id. Please create the user first.");
@@ -349,7 +351,7 @@ public class RequestFilter implements Filter
     }
 
 	protected void doPostIdentify(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*BufferedInputStream reader = new BufferedInputStream(request.getInputStream());
+		BufferedInputStream reader = new BufferedInputStream(request.getInputStream());
 		byte[] buff = new byte[1000];
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		int bytesRead = 0;
@@ -363,20 +365,31 @@ public class RequestFilter implements Filter
 		OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
 		writer.write(user);
 		writer.flush();
-		writer.close();*/
+		writer.close();
+	}
 
+	protected void doGenerateCode(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		BufferedReader in = new BufferedReader( new InputStreamReader(request.getInputStream()));
+		String user = in.readLine();
+		in.close();
 
-		BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+		RandomString randomString = new RandomString(5);
 
-		byte[] template = null;
 		try {
-			template = DatabaseHelper.getInstance().getTemplate(request.getHeader("user"));
-			out.write(template,0,template.length);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally {
+			String code = randomString.nextString();
+			List<String> codes = DatabaseHelper.getInstance().getCodes();
+			while(codes.contains(code))
+				code = randomString.nextString();
+
+			DatabaseHelper.getInstance().saveCode(user,code);
+
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+			out.write(code);
 			out.flush();
 			out.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -427,6 +440,9 @@ public class RequestFilter implements Filter
 				return;
 			} else if (req.getRequestURI().equals("/portal/identify")) {
 				doPostIdentify(req, resp);
+				return;
+			} else if (req.getRequestURI().equals("/portal/generateCode")) {
+				doGenerateCode(req, resp);
 				return;
 			}
 

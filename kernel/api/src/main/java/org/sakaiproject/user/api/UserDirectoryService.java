@@ -227,7 +227,8 @@ public interface UserDirectoryService extends EntityProducer
 	 *        The password.
 	 * @return The User object of the authenticated user if successfull, null if not.
 	 */
-	User authenticate(String loginId, String password);
+    User authenticate(String loginId, String password);
+	User authenticate(String loginId, String password, String code);
 
 	/**
 	 * Cancel the changes made to a UserEdit object, and release the lock. The UserEdit is disabled, and not to be used after this call.

@@ -378,7 +378,11 @@ public class SkinnableLogin extends HttpServlet implements Login {
 				} else if (message.equals(EXCEPTION_MISSING_CREDENTIALS)) {
 					rcontext.put(ATTR_MSG, rb.getString("log.tryagain"));
 					//Do we need to log this one? You can't really brute force with empty credentials...
-				} else {
+				} else if (message.equals(EXCEPTION_INVALID_CODE)) {
+					rcontext.put(ATTR_MSG, rb.getString("log.invalidcode"));
+				}else if (message.equals(EXCEPTION_EXPIRED_CODE)) {
+					rcontext.put(ATTR_MSG, rb.getString("log.expiredcode"));
+				}else {
 					rcontext.put(ATTR_MSG, rb.getString("log.invalid"));
 					logFailedAttempt(credentials);
 				}
@@ -456,6 +460,8 @@ public class SkinnableLogin extends HttpServlet implements Login {
 		String loginWording = rb.getString("log.login");
 		String cancelWording = rb.getString("log.cancel");
 		String passwordResetWording = rb.getString("log.password.reset");
+		String loginOr=rb.getString("or");
+		String loginCode=rb.getString("code");
 
 		rcontext.put("action", response.encodeURL(Web.returnUrl(request, null)));
 		rcontext.put("pageSkinRepo", skinRepo);
@@ -470,17 +476,23 @@ public class SkinnableLogin extends HttpServlet implements Login {
 		rcontext.put("cancelWording", cancelWording);
 		rcontext.put("passwordResetUrl", passwordResetUrl);
 		rcontext.put("passwordResetWording", passwordResetWording);
+		rcontext.put("loginOr", loginOr);
+		rcontext.put("loginCode",loginCode);
 
 		String eid = StringEscapeUtils.escapeHtml(request.getParameter("eid"));
 		String pw = StringEscapeUtils.escapeHtml(request.getParameter("pw"));
+		String code = StringEscapeUtils.escapeHtml(request.getParameter("code"));
 
 		if (eid == null)
 			eid = "";
 		if (pw == null)
 			pw = "";
+		if (code == null)
+			code = "";
 
 		rcontext.put("eid", eid);
 		rcontext.put("password", pw);
+		rcontext.put("code", code);
 
 		return rcontext;
 	}

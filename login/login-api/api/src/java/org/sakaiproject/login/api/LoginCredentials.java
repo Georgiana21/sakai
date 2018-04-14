@@ -28,6 +28,7 @@ public class LoginCredentials {
 
 	private String identifier;
 	private String password;
+	private String code;
 	private String remoteAddr;
 	private Map parameterMap;
 	private String sessionId;
@@ -36,6 +37,7 @@ public class LoginCredentials {
 	public LoginCredentials(HttpServletRequest request) {
 		this.identifier = request.getParameter("eid");
 		this.password = request.getParameter("pw");
+		this.code = request.getParameter("code");
 		this.remoteAddr = request.getRemoteAddr();
 		this.parameterMap = request.getParameterMap();
 		this.request = request;
@@ -58,6 +60,12 @@ public class LoginCredentials {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 	public String getRemoteAddr() {
 		return remoteAddr;

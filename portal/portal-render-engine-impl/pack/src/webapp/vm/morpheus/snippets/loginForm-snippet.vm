@@ -3,5 +3,8 @@
     	<input name="eid" id="eid" type="text" class="Mrphs-loginForm__input" placeholder="${eidPlaceholder}">
 	<label for="pw" class="Mrphs-loginForm__label">${loginPwWording}</label>
 		<input name="pw" id="pw" type="password" class="Mrphs-loginForm__input" placeholder="${pwPlaceholder}">
+	<label>${loginOr}</label>
+    <label for="code" class="Mrphs-loginForm__label">${loginCode}</label>
+    	<input name="code" id="code" type="text" class="Mrphs-loginForm__input" placeholder="${codePlaceholder}">
     <input name="submit" id="submit" type="submit" value="${loginWording}" class="Mrphs-loginForm__button">
 </form>
