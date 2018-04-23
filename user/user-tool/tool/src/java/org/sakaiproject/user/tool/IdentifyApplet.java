@@ -7,16 +7,22 @@ import com.neurotec.devices.NDeviceType;
 import com.neurotec.devices.NFScanner;
 import com.neurotec.io.NBuffer;
 import com.neurotec.licensing.NLicense;
+import org.sakaiproject.util.RSAHelper;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.cert.CertificateException;
 import java.util.EnumSet;
 
 public class IdentifyApplet extends Applet {
@@ -127,12 +133,18 @@ public class IdentifyApplet extends Applet {
             con.setRequestProperty("Content-Type", "application/octet-stream");
             con.setRequestProperty("user",user.getText());
 
-            BufferedOutputStream out = new BufferedOutputStream(con.getOutputStream());
-
             biometricClient.createTemplate(subjectToIdentify);
             byte[] template = subjectToIdentify.getTemplateBuffer().toByteArray();
 
-            out.write(template,0,template.length);
+            URL urlCert = new URL("http://localhost:8080/res/ISMCertificateX509.cer");
+            URLConnection conCert = urlCert.openConnection();
+            PublicKey publicKey = RSAHelper.getCertificateKey(conCert.getInputStream());
+            byte[] cipherText = RSAHelper.encrypt(template, publicKey);
+            con.setRequestProperty("size", String.valueOf(template.length));
+
+            BufferedOutputStream out = new BufferedOutputStream(con.getOutputStream());
+
+            out.write(cipherText,0,cipherText.length);
             out.flush();
             out.close();
 
@@ -153,9 +165,7 @@ public class IdentifyApplet extends Applet {
                 identifyStatus.setText("User not found. Please try again.");
                 identifyStatus.setForeground(Color.red);
             }
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException e1) {
             e1.printStackTrace();
         }
     }

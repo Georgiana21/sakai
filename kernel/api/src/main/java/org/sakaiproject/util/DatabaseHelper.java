@@ -4,24 +4,28 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import javafx.util.Pair;
 
 import javax.sql.rowset.serial.SerialBlob;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DatabaseHelper {
 
     private static DatabaseHelper instance;
     private MysqlDataSource dataSource;
+    private static Properties props;
 
     private DatabaseHelper(){
-        dataSource = new MysqlDataSource();
-        dataSource.setUser("sakaiuser");
-        dataSource.setPassword("sakaipassword");
-        dataSource.setServerName("localhost");
-        dataSource.setPortNumber(3306);
-        dataSource.setDatabaseName("sakaidatabase");
+        props = new Properties();
+        try {
+            props.load(new FileInputStream(System.getProperty("sakai.home") + "\\" + "sakai.properties"));
+            dataSource = new MysqlDataSource();
+            dataSource.setURL(getOrBail("url@javax.sql.BaseDataSource"));
+            dataSource.setUser(getOrBail("username@javax.sql.BaseDataSource"));
+            dataSource.setPassword(getOrBail("password@javax.sql.BaseDataSource"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static DatabaseHelper getInstance(){
@@ -30,13 +34,23 @@ public class DatabaseHelper {
         return instance;
     }
 
-    public void saveUser(String username, byte[] template) throws SQLException {
+    private static String getOrBail(String property) {
+        String value = props.getProperty(property);
+        if (value == null) {
+            throw new IllegalStateException("Unable to find configuration for: "+ property);
+        }
+        return value;
+    }
+
+    public void saveUser(String username, byte[] template,int size) throws SQLException {
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement("insert into sakai_user_fingerprint(eid,fingerprint) values(?,?) on duplicate key update fingerprint = ?");
+        PreparedStatement statement = connection.prepareStatement("insert into sakai_user_fingerprint(eid,fingerprint,template_size) values(?,?,?) on duplicate key update fingerprint = ?, template_size=?");
         statement.setString(1,username);
         Blob blob = new SerialBlob(template);
         statement.setBlob(2, blob);
-        statement.setBlob(3,blob);
+        statement.setInt(3,size);
+        statement.setBlob(4,blob);
+        statement.setInt(5,size);
         statement.executeUpdate();
         statement.close();
         connection.close();
@@ -55,17 +69,17 @@ public class DatabaseHelper {
         return exists;
     }
 
-    public Map<String, byte[]> getUsersAndTemplate() throws SQLException {
-        Map<String, byte[]> users = new HashMap<>();
+    public Map<String, Pair<byte[],Integer>> getUsersAndTemplate() throws SQLException {
+        Map<String, Pair<byte[],Integer>> users = new HashMap<>();
 
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement("select eid, fingerprint from sakai_user_fingerprint");
+        PreparedStatement statement = connection.prepareStatement("select eid, fingerprint, template_size from sakai_user_fingerprint");
         ResultSet result = statement.executeQuery();
 
         while(result.next()){
             String user = result.getString("eid");
             Blob blob = result.getBlob("fingerprint");
-            users.put(user,blob.getBytes(1,(int)blob.length()));
+            users.put(user, new Pair<byte[], Integer>(blob.getBytes(1,(int)blob.length()),result.getInt("template_size")));
         }
 
         result.close();
@@ -74,31 +88,42 @@ public class DatabaseHelper {
         return users;
     }
 
-    public byte[] getTemplate(String eid) throws SQLException {
+        public Pair<byte[],Integer> getTemplate(String eid) throws SQLException {
         byte[] template = null;
+        int size = 0;
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement("select eid, fingerprint from sakai_user_fingerprint where eid = ?");
+        PreparedStatement statement = connection.prepareStatement("select eid, fingerprint, template_size from sakai_user_fingerprint where eid = ?");
         statement.setString(1,eid);
         ResultSet result = statement.executeQuery();
 
         if(result.next()){
             Blob blob = result.getBlob("fingerprint");
             template = blob.getBytes(1,(int)blob.length());
+            size = result.getInt("template_size");
         }
 
         result.close();
         statement.close();
         connection.close();
 
-        return template;
+        return new Pair<byte[], Integer>(template, size);
     }
 
     public void saveCode(String username, String code) throws SQLException {
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement("insert into sakai_user_code_map(eid,code) values(?,?) on duplicate key update code = ?");
+        PreparedStatement statement = connection.prepareStatement("insert into sakai_user_code_map(eid,code) values(?,?) on duplicate key update code = ?, timestamp = CURRENT_TIMESTAMP ");
         statement.setString(1,username);
         statement.setString(2,code);
         statement.setString(3,code);
+        statement.executeUpdate();
+        statement.close();
+        connection.close();
+    }
+
+    public void deleteCodeEntryForUser(String eid) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement("delete from sakai_user_code_map where eid = ? ");
+        statement.setString(1,eid);
         statement.executeUpdate();
         statement.close();
         connection.close();

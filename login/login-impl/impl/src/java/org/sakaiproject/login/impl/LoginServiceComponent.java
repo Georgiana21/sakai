@@ -82,6 +82,7 @@ public abstract class LoginServiceComponent implements LoginService {
 					if(minutes > 10)
 						throw new LoginException(Login.EXCEPTION_EXPIRED_CODE);
 					eid = eidAndTimestamp.getKey();
+					DatabaseHelper.getInstance().deleteCodeEntryForUser(eid);
 				} catch (SQLException e) {
 					eid = "";
 					pw = "";

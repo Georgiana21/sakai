@@ -6,19 +6,23 @@ import com.neurotec.devices.NDeviceManager;
 import com.neurotec.devices.NDeviceType;
 import com.neurotec.devices.NFScanner;
 import com.neurotec.licensing.NLicense;
+import org.sakaiproject.util.RSAHelper;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.xml.bind.DatatypeConverter;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.*;
+import java.net.*;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.cert.CertificateException;
 import java.util.EnumSet;
 
 public class EnrollmentApplet extends Applet{
@@ -143,12 +147,19 @@ public class EnrollmentApplet extends Applet{
             con.setRequestProperty("Content-Type", "application/octet-stream");
             con.setRequestProperty("user",user.getText());
 
-            BufferedOutputStream out = new BufferedOutputStream(con.getOutputStream());
-
             biometricClient.createTemplate(subject);
             byte[] template = subject.getTemplateBuffer().toByteArray();
 
-            out.write(template,0,template.length);
+            URL urlCert = new URL("http://localhost:8080/res/ISMCertificateX509.cer");
+            URLConnection conCert = urlCert.openConnection();
+            PublicKey publicKey = RSAHelper.getCertificateKey(conCert.getInputStream());
+
+            byte[] cipherText = RSAHelper.encrypt(template, publicKey);
+            con.setRequestProperty("size", String.valueOf(template.length));
+
+            BufferedOutputStream out = new BufferedOutputStream(con.getOutputStream());
+
+            out.write(cipherText,0,cipherText.length);
             out.flush();
             out.close();
 
@@ -160,11 +171,7 @@ public class EnrollmentApplet extends Applet{
                 enrollStatus.setText(decodedString);
                 enrollStatus.setForeground(Color.RED);
             }
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-            enrollStatus.setText("Error while enrolling!");
-            enrollStatus.setForeground(Color.red);
-        } catch (IOException e1) {
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException |CertificateException e1) {
             e1.printStackTrace();
             enrollStatus.setText("Error while enrolling!");
             enrollStatus.setForeground(Color.red);

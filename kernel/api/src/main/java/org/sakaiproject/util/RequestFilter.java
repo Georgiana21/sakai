@@ -44,11 +44,15 @@ import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.api.SessionManager;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.crypto.Data;
 import java.io.*;
-import java.security.Principal;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -330,13 +334,13 @@ public class RequestFilter implements Filter
         reader.close();
 
         byte[] template = output.toByteArray();
-        int size = template.length;
         String user = request.getHeader("user");
+        int templateSize = Integer.valueOf(request.getHeader("size"));
 
         try {
         	if(DatabaseHelper.getInstance().userExists(user)) {
-				DatabaseHelper.getInstance().saveUser(user, template);
-				FingerHelper.getInstance().addFingerToCache(user, template);
+				DatabaseHelper.getInstance().saveUser(user, template,templateSize);
+				FingerHelper.getInstance().addFingerToCache(user, template, templateSize);
 			}else{
 				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
 				writer.write("No user found with this id. Please create the user first.");
@@ -358,14 +362,22 @@ public class RequestFilter implements Filter
 		while ((bytesRead = reader.read(buff)) != -1)
 			output.write(buff,0,bytesRead);
 		byte[] template = output.toByteArray();
-		int size = template.length;
+		int templateSize = Integer.valueOf(request.getHeader("size"));
 
-		String user = FingerHelper.getInstance().identifyUser(template);
+		try {
+			byte[] decryptedTemplate = FingerHelper.getInstance().getDecryptedTemplate(template, templateSize);
 
-		OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
-		writer.write(user);
-		writer.flush();
-		writer.close();
+			String user = FingerHelper.getInstance().identifyUser(decryptedTemplate);
+
+			OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
+			writer.write(user);
+			writer.flush();
+			writer.close();
+		} catch (UnrecoverableKeyException e) {
+			e.printStackTrace();
+		} catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | NoSuchPaddingException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void doGenerateCode(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
