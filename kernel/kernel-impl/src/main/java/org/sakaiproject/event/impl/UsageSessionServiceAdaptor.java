@@ -39,6 +39,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.sakaiproject.user.api.AuthenticationMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sakaiproject.authz.api.AuthzGroupService;
@@ -265,7 +266,12 @@ public abstract class UsageSessionServiceAdaptor implements UsageSessionService
 	/**
 	 * @inheritDoc
 	 */
-	public UsageSession startSession(String userId, String remoteAddress, String userAgent)
+    public UsageSession startSession(String userId, String remoteAddress, String userAgent)
+    {
+        return startSession(userId, AuthenticationMethod.PASSWORD, remoteAddress, userAgent);
+    }
+
+	public UsageSession startSession(String userId, AuthenticationMethod method, String remoteAddress, String userAgent)
 	{
 		// do we have a current session?
 		Session s = sessionManager().getCurrentSession();
@@ -304,7 +310,7 @@ public abstract class UsageSessionServiceAdaptor implements UsageSessionService
 			
 			// create the usage session and bind it to the session
 			session = new BaseUsageSession(this, idManager().createUuid(), serverConfigurationService().getServerIdInstance(), userId,
-					remoteAddress, hostName, userAgent);
+					remoteAddress, hostName, userAgent, method);
 
 			// store
 			if (m_storage.addSession(session))
@@ -495,7 +501,7 @@ public abstract class UsageSessionServiceAdaptor implements UsageSessionService
 	 */
 	public boolean login(Authentication authn, HttpServletRequest req)
 	{
-		return login(authn.getUid(), authn.getEid(), req.getRemoteAddr(), req.getHeader("user-agent"), null);
+		return login(authn.getUid(), authn.getEid(), authn.getMethod(), req.getRemoteAddr(), req.getHeader("user-agent"), null);
 	}
 
 	/**
@@ -509,10 +515,15 @@ public abstract class UsageSessionServiceAdaptor implements UsageSessionService
 	/**
 	 * @inheritDoc
 	 */
-	public boolean login(String uid, String eid, String remoteaddr, String ua, String event)
+    public boolean login(String uid, String eid, String remoteaddr, String ua, String event)
+    {
+        return login(uid, eid, AuthenticationMethod.PASSWORD, remoteaddr, ua, event);
+    }
+
+	public boolean login(String uid, String eid, AuthenticationMethod method, String remoteaddr, String ua, String event)
 	{
 		// establish the user's session - this has been known to fail
-		UsageSession session = startSession(uid, remoteaddr, ua);
+		UsageSession session = startSession(uid, method, remoteaddr, ua);
 		if (session == null)
 		{
 			return false;
@@ -855,7 +866,8 @@ public abstract class UsageSessionServiceAdaptor implements UsageSessionService
 				userAgent,
 				session.getStart(),
 				session.getEnd(),
-				session.isClosed() ? null : Boolean.valueOf(true)
+				session.isClosed() ? null : Boolean.valueOf(true),
+				session.getAuthenticationMethod().toString()
 			});
 			if (!ok)
 			{
@@ -1092,7 +1104,7 @@ public abstract class UsageSessionServiceAdaptor implements UsageSessionService
 		
 		return sessions.size();
 	}
-	
+
 	private static String byteArray2Hex(byte[] hash) {
         Formatter formatter = new Formatter();
         for (byte b : hash) {

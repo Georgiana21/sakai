@@ -41,4 +41,6 @@ public interface Authentication
 	 * @return The enterprise id (if known) of the authenticated end user, null if not known.
 	 */
 	String getEid();
+
+	AuthenticationMethod getMethod();
 }

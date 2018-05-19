@@ -117,7 +117,7 @@ public class IdentifyApplet extends Applet {
 
     public void identifyUser(){
         if(finger == null){
-            identifyStatus.setText("Please add username and press identify.");
+            identifyStatus.setText("Please scan finger and press identify.");
             identifyStatus.setForeground(Color.red);
             return;
         }

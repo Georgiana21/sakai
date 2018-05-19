@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class UsageSessionServiceSqlDefault implements UsageSessionServiceSql
 {
-	protected static final String USAGE_SESSION_COLUMNS = "SESSION_ID,SESSION_SERVER,SESSION_USER,SESSION_IP,SESSION_HOSTNAME,SESSION_USER_AGENT,SESSION_START,SESSION_END,SESSION_ACTIVE";
+	protected static final String USAGE_SESSION_COLUMNS = "SESSION_ID,SESSION_SERVER,SESSION_USER,SESSION_IP,SESSION_HOSTNAME,SESSION_USER_AGENT,SESSION_START,SESSION_END,SESSION_ACTIVE,SESSION_AUTH_METHOD";
 	protected static final String MOST_RECENT_USAGE_SESSION_COLUMNS = "SESSION_ID,SESSION_SERVER,SESSION_USER,SESSION_IP,SESSION_HOSTNAME,SESSION_USER_AGENT,MAX(SESSION_START) as SESSION_START,SESSION_END,SESSION_ACTIVE";
 
    /**
@@ -36,7 +36,7 @@ public class UsageSessionServiceSqlDefault implements UsageSessionServiceSql
 	 */
 	public String getInsertSakaiSessionSql()
 	{
-		return "insert into SAKAI_SESSION (" + USAGE_SESSION_COLUMNS + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		return "insert into SAKAI_SESSION (" + USAGE_SESSION_COLUMNS + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	}
 
 	/**
@@ -102,6 +102,4 @@ public class UsageSessionServiceSqlDefault implements UsageSessionServiceSql
 	public String getSessionsCountSql() {
 		return "select COUNT(*) from SAKAI_SESSION";
 	}
-
-
 }

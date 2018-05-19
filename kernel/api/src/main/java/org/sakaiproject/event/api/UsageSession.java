@@ -22,6 +22,7 @@
 package org.sakaiproject.event.api;
 
 import org.sakaiproject.time.api.Time;
+import org.sakaiproject.user.api.AuthenticationMethod;
 
 /**
  * <p>
@@ -141,4 +142,8 @@ public interface UsageSession extends Comparable
 	 * @return The time the session ended. If still going, this will .equals() the getStart() value.
 	 */
 	Time getEnd();
+
+	AuthenticationMethod getAuthenticationMethod();
+
+	void invalidate();
 }

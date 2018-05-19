@@ -28,6 +28,7 @@ import org.sakaiproject.event.api.UsageSession;
 import org.sakaiproject.time.api.Time;
 import org.sakaiproject.tool.api.SessionBindingEvent;
 import org.sakaiproject.tool.api.SessionBindingListener;
+import org.sakaiproject.user.api.AuthenticationMethod;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserNotDefinedException;
 
@@ -72,6 +73,8 @@ public class BaseUsageSession implements UsageSession, SessionBindingListener
 	/** Flag for active session */
 	protected boolean m_active = false;
 
+	protected AuthenticationMethod m_method = AuthenticationMethod.PASSWORD;
+
 	/**
 	 * Construct fully from persisted data.
 	 *
@@ -102,6 +105,9 @@ public class BaseUsageSession implements UsageSession, SessionBindingListener
 		Boolean isActive = result.getBoolean(9);
 		m_active = ((isActive != null) && isActive.booleanValue());
 		setBrowserId(m_userAgent);
+		String authMetod = result.getString(10);
+		if(authMetod != null)
+			m_method = AuthenticationMethod.valueOf(authMetod);
 	}
 
 	protected void resolveTransientFields()
@@ -140,6 +146,22 @@ public class BaseUsageSession implements UsageSession, SessionBindingListener
 		m_start = this.usageSessionServiceAdaptor.timeService().newTime();
 		m_end = m_start;
 		m_active = true;
+		setBrowserId(agent);
+	}
+
+	public BaseUsageSession(UsageSessionServiceAdaptor usageSessionServiceAdaptor, String id, String server, String user, String address, String hostname, String agent, AuthenticationMethod method)
+	{
+		this.usageSessionServiceAdaptor = usageSessionServiceAdaptor;
+		m_id = id;
+		m_server = server;
+		m_user = user;
+		m_ip = address;
+		m_hostname = hostname;
+		m_userAgent = agent;
+		m_start = this.usageSessionServiceAdaptor.timeService().newTime();
+		m_end = m_start;
+		m_active = true;
+		m_method = method;
 		setBrowserId(agent);
 	}
 
@@ -406,9 +428,14 @@ public class BaseUsageSession implements UsageSession, SessionBindingListener
 	 * @inheritDoc
 	 */
 	public String toString()
-	{
+		{
 		return "[" + ((m_id == null) ? "" : m_id) + " | " + ((m_server == null) ? "" : m_server) + " | " + ((m_user == null) ? "" : m_user)
 				+ " | " + ((m_ip == null) ? "" : m_ip) + " | " + ((m_userAgent == null) ? "" : m_userAgent) + " | " + m_start.toStringGmtFull()
 				+ " ]";
+	}
+
+	public AuthenticationMethod getAuthenticationMethod()
+	{
+		return m_method;
 	}
 }

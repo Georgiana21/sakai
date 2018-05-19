@@ -43,6 +43,8 @@ public interface SessionManager
 	 */
 	Session getSession(String sessionId);
 
+	void addSession(Session session);
+
 	/**
 	 * Generate a session ID for the given request and principal
 	 * 
@@ -120,4 +122,6 @@ public interface SessionManager
 	 * 		  Elapsed time within which sessions have been active
 	 */
 	int getActiveUserCount(int secs);
+
+	Session getSessionByUsageSessionId(String id);
 }

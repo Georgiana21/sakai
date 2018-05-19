@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.sakaiproject.user.api.Authentication;
+import org.sakaiproject.user.api.AuthenticationMethod;
 
 /**
  * <p>
@@ -65,6 +66,8 @@ public interface UsageSessionService
 	 * @return The new UsageSession, or null if one could not be created.
 	 */
 	UsageSession startSession(String userId, String remoteAddress, String userAgent);
+
+	UsageSession startSession(String userId, AuthenticationMethod method, String remoteAddress, String userAgent);
 
 	/**
 	 * Access the usage session associated with the current request or thread.
@@ -199,6 +202,8 @@ public interface UsageSessionService
 	 * @return true if all went well, false if not (may fail if the userId is not a valid User)
 	 */
 	public boolean login(String uid, String eid, String remoteaddr, String ua, String event);
+
+	public boolean login(String uid, String eid, AuthenticationMethod method, String remoteaddr, String ua, String event);
 	
 	/**
 	 * End a usage session and otherwise cleanup from a login.
@@ -215,5 +220,4 @@ public interface UsageSessionService
 	 * @return number of invalid sessions closed
 	 */
 	int closeSessionsOnInvalidServers(List<String> validServerIds);
-
 }

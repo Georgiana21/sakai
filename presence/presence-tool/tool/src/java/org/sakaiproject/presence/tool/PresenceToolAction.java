@@ -41,6 +41,8 @@ import org.sakaiproject.event.api.UsageSession;
 import org.sakaiproject.event.cover.UsageSessionService;
 import org.sakaiproject.presence.cover.PresenceService;
 import org.sakaiproject.tool.api.Placement;
+import org.sakaiproject.tool.api.Session;
+import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.PresenceObservingCourier;
 import org.sakaiproject.util.ResourceLoader;
@@ -68,8 +70,11 @@ public class PresenceToolAction extends VelocityPortletPaneledAction
 
     protected ClusterService clusterService;
 
+    protected SessionManager sessionManager;
+
 	public PresenceToolAction() {
 		clusterService = (ClusterService) ComponentManager.get(ClusterService.class);
+		sessionManager = ComponentManager.get(SessionManager.class);
 	}
 	/**
 	 * Populate the state object, if needed.
@@ -285,6 +290,14 @@ public class PresenceToolAction extends VelocityPortletPaneledAction
 		String id = data.getParameters().getString("server_id");
 		String status = data.getParameters().getString("status");
 		clusterService.markClosing(id, !ClusterService.Status.CLOSING.toString().equals(status));
+	}
+
+	public void doCloseSession(RunData data, Context context)
+	{
+		String sessionId = data.getParameters().getString("sessionToClose");
+		Session session = sessionManager.getSessionByUsageSessionId(sessionId);//UsageSessionService.getSession(sessionId);
+		if(session != null)
+			session.invalidate();
 	}
 
 	/**

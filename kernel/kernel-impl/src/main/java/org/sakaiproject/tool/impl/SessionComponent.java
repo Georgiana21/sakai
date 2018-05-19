@@ -39,6 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.mutable.MutableLong;
 import org.sakaiproject.cluster.api.ClusterService;
 import org.sakaiproject.component.cover.ComponentManager;
+import org.sakaiproject.event.api.UsageSessionService;
+import org.sakaiproject.event.impl.BaseUsageSession;
 import org.sakaiproject.id.api.IdManager;
 import org.sakaiproject.thread_local.api.ThreadLocalManager;
 import org.sakaiproject.tool.api.ClosingException;
@@ -244,6 +246,22 @@ public abstract class SessionComponent implements SessionManager, SessionStore
 		MySession s = (MySession) m_sessions.get(sessionId);
 
 		return s;
+	}
+
+	public Session getSessionByUsageSessionId(String id)
+	{
+		for(Session s : m_sessions.values())
+		{
+			BaseUsageSession sessionService = (BaseUsageSession)s.getAttribute("org.sakaiproject.event.api.UsageSessionService");
+			if(sessionService != null && sessionService.getId().equals(id))
+				return s;
+		}
+		return null;
+	}
+
+	public void addSession(Session session)
+	{
+		m_sessions.put(session.getId(), session);
 	}
 	
 	public String makeSessionId(HttpServletRequest req, Principal principal)

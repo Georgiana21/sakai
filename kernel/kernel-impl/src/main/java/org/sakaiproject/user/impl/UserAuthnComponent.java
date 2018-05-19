@@ -21,19 +21,10 @@
 
 package org.sakaiproject.user.impl;
 
+import org.sakaiproject.user.api.*;
+import org.sakaiproject.user.api.AuthenticationMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sakaiproject.user.api.Authentication;
-import org.sakaiproject.user.api.AuthenticationException;
-import org.sakaiproject.user.api.AuthenticationManager;
-import org.sakaiproject.user.api.AuthenticationMissingException;
-import org.sakaiproject.user.api.AuthenticationUnknownException;
-import org.sakaiproject.user.api.Evidence;
-import org.sakaiproject.user.api.ExternalTrustedEvidence;
-import org.sakaiproject.user.api.IdPwEvidence;
-import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.api.UserDirectoryService;
-import org.sakaiproject.user.api.UserNotDefinedException;
 
 /**
  * <p>
@@ -118,7 +109,7 @@ public abstract class UserAuthnComponent implements AuthenticationManager
 				throw new AuthenticationException("Account Disabled: The users authentication has been disabled");
 			}
 
-			rv = new org.sakaiproject.util.Authentication(user.getId(), user.getEid());
+			rv = new org.sakaiproject.util.Authentication(user.getId(), user.getEid(), evidence.getCode() == null || evidence.getCode().length() == 0 ? AuthenticationMethod.PASSWORD : AuthenticationMethod.CODE);
 			
 			// Cache the authentication.
 			if(evidence.getIdentifier() != null && evidence.getIdentifier().length() !=0 &&

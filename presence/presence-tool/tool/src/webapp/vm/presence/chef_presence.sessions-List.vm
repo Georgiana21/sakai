@@ -15,7 +15,7 @@
 			</tr>
 			#foreach ($currSession in $servers.get("$serverName"))
 				<tr class="highLightRow">
-					<th rowspan="5">$velocityCount</th>
+					<th rowspan="7">$velocityCount</th>
 					<td>$tlang.getString("presence.session.session")</td>
 					<td><h5>$validator.escapeHtml($currSession.Id)</h5></td>
 				</tr>
@@ -34,7 +34,20 @@
 				<tr>
 					<td>$tlang.getString("presence.session.started")</td>
 					<td>$validator.escapeHtml($currSession.getStart().toStringLocalFull())</td>															
-				</tr>	
+				</tr>
+                <tr>
+                    <td>$tlang.getString("presence.session.authenticationMethod")</td>
+                    <td>$validator.escapeHtml($currSession.getAuthenticationMethod().getValue())</td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <form name="prevpageForm" class="inlineForm" method="post" action="#toolForm("$action")">
+                            <input type="hidden" name="sessionToClose" value="$currSession.Id"/>
+                            <input type="submit" name="eventSubmit_doCloseSession" value="Close session"/>
+                            <input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
+                        </form>
+                    </td>
+                </tr>
 			#end
 		#end
 	</table>

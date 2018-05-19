@@ -21,6 +21,8 @@
 
 package org.sakaiproject.util;
 
+import org.sakaiproject.user.api.AuthenticationMethod;
+
 import java.io.Serializable;
 
 /**
@@ -38,6 +40,9 @@ public class Authentication implements org.sakaiproject.user.api.Authentication,
 	/** The enterprise identifier string. */
 	protected String m_eid = null;
 
+	/** The authentication method*/
+	protected AuthenticationMethod m_method = AuthenticationMethod.PASSWORD;
+
 	/**
 	 * Construct, with uid and eid
 	 * 
@@ -50,6 +55,13 @@ public class Authentication implements org.sakaiproject.user.api.Authentication,
 	{
 		m_uid = uid;
 		m_eid = eid;
+	}
+
+	public Authentication(String uid, String eid, AuthenticationMethod method)
+	{
+		m_uid = uid;
+		m_eid = eid;
+		m_method = method;
 	}
 
 	/**
@@ -67,4 +79,6 @@ public class Authentication implements org.sakaiproject.user.api.Authentication,
 	{
 		return m_eid;
 	}
+
+	public AuthenticationMethod getMethod() { return m_method; }
 }
