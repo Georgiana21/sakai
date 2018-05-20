@@ -6,6 +6,7 @@ import com.neurotec.devices.NDeviceManager;
 import com.neurotec.devices.NDeviceType;
 import com.neurotec.devices.NFScanner;
 import com.neurotec.licensing.NLicense;
+import netscape.javascript.JSObject;
 import org.sakaiproject.util.RSAHelper;
 
 import javax.crypto.BadPaddingException;
@@ -24,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
+import java.util.List;
 
 public class EnrollmentApplet extends Applet{
 
@@ -42,9 +44,15 @@ public class EnrollmentApplet extends Applet{
     private Label enrollStatus = new Label();
     private Label username = new Label("Username: ");
 
+    private JSObject window;
+    private JSObject document;
+
     public void init(){
         initLayout();
         initVerifingerSDK();
+
+        window = JSObject.getWindow(this);
+        document = (JSObject) window.getMember("document");
     }
 
     public void initLayout(){
@@ -134,6 +142,13 @@ public class EnrollmentApplet extends Applet{
         enrollStatus.setForeground(Color.decode("#0c9307"));
     }
 
+    public String getCookies() {
+        System.out.println("Get cookies");
+        String cookie = (String)document.getMember("cookie");
+        System.out.println("Cookies: " + cookie);
+        return cookie;
+    }
+
     public void sendTemplateToServer(){
         try {
             URL url = new URL(getCodeBase(), "/portal/enrollment");
@@ -146,6 +161,7 @@ public class EnrollmentApplet extends Applet{
             con.setUseCaches(false);
             con.setRequestProperty("Content-Type", "application/octet-stream");
             con.setRequestProperty("user",user.getText());
+            con.setRequestProperty("Cookie", getCookies());
 
             biometricClient.createTemplate(subject);
             byte[] template = subject.getTemplateBuffer().toByteArray();

@@ -27,6 +27,10 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.sakaiproject.authz.cover.SecurityService;
+import org.sakaiproject.user.api.User;
+import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.user.cover.UserDirectoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sakaiproject.cluster.api.ClusterNode;
@@ -49,7 +53,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -325,6 +328,9 @@ public class RequestFilter implements Filter
 	}
 
     protected void doPostEnroll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if(!checkSuperUser(request))
+			return;
+
         BufferedInputStream reader = new BufferedInputStream(request.getInputStream());
         byte[] buff = new byte[1000];
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -355,6 +361,9 @@ public class RequestFilter implements Filter
     }
 
 	protected void doPostIdentify(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if(!checkSuperUser(request))
+			return;
+
 		BufferedInputStream reader = new BufferedInputStream(request.getInputStream());
 		byte[] buff = new byte[1000];
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -381,6 +390,9 @@ public class RequestFilter implements Filter
 	}
 
 	protected void doGenerateCode(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if(!checkSuperUser(request))
+			return;
+
 		BufferedReader in = new BufferedReader( new InputStreamReader(request.getInputStream()));
 		String user = in.readLine();
 		in.close();
@@ -404,6 +416,37 @@ public class RequestFilter implements Filter
 			e.printStackTrace();
 		}
 
+	}
+
+	public boolean checkSuperUser(HttpServletRequest request)
+	{
+		Cookie c = null;
+		String suffix = getCookieSuffix();
+		c = findCookie(request, cookieName, suffix);
+
+		if(c == null)
+			return false;
+
+		String sessionId = c.getValue();
+
+		final int dotPosition = sessionId.indexOf(DOT);
+		if (dotPosition < 0)
+			return false;
+
+		sessionId = sessionId.substring(0, dotPosition);
+
+		Session s = sessionManager.getSession(sessionId);
+		if(s == null)
+			return false;
+
+		try {
+			User user = UserDirectoryService.getUserByEid(s.getUserEid());
+			if(SecurityService.isSuperUser(user.getId()))
+				return true;
+			return false;
+		} catch (UserNotDefinedException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -457,7 +500,6 @@ public class RequestFilter implements Filter
 				doGenerateCode(req, resp);
 				return;
 			}
-
 
 			// knl-640
 			// The AppDomain should reject:

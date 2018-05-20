@@ -7,6 +7,7 @@ import com.neurotec.devices.NDeviceType;
 import com.neurotec.devices.NFScanner;
 import com.neurotec.io.NBuffer;
 import com.neurotec.licensing.NLicense;
+import netscape.javascript.JSObject;
 import org.sakaiproject.util.RSAHelper;
 
 import javax.crypto.BadPaddingException;
@@ -42,9 +43,15 @@ public class IdentifyApplet extends Applet {
     private Label username = new Label("Username: ");
     private Label identifyStatus = new Label();
 
+    private JSObject window;
+    private JSObject document;
+
     public void init(){
         initLayout();
         initVerifingerSDK();
+
+        window = JSObject.getWindow(this);
+        document = (JSObject) window.getMember("document");
     }
 
     public void initLayout(){
@@ -115,6 +122,13 @@ public class IdentifyApplet extends Applet {
         this.repaint();
     }
 
+    public String getCookies() {
+        System.out.println("Get cookies");
+        String cookie = (String)document.getMember("cookie");
+        System.out.println("Cookies: " + cookie);
+        return cookie;
+    }
+
     public void identifyUser(){
         if(finger == null){
             identifyStatus.setText("Please scan finger and press identify.");
@@ -132,6 +146,7 @@ public class IdentifyApplet extends Applet {
             con.setUseCaches(false);
             con.setRequestProperty("Content-Type", "application/octet-stream");
             con.setRequestProperty("user",user.getText());
+            con.setRequestProperty("Cookie", getCookies());
 
             biometricClient.createTemplate(subjectToIdentify);
             byte[] template = subjectToIdentify.getTemplateBuffer().toByteArray();
@@ -179,6 +194,7 @@ public class IdentifyApplet extends Applet {
         con.setDoOutput(true);
         con.setUseCaches(false);
         con.setRequestProperty("Content-Type", "application/octet-stream");
+        con.setRequestProperty("Cookie", getCookies());
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
         writer.write(user);
