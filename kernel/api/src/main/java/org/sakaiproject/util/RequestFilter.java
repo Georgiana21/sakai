@@ -341,15 +341,17 @@ public class RequestFilter implements Filter
 
         byte[] template = output.toByteArray();
         String user = request.getHeader("user");
+        String password = request.getHeader("pw");
         int templateSize = Integer.valueOf(request.getHeader("size"));
 
         try {
-        	if(DatabaseHelper.getInstance().userExists(user)) {
+        	User userObj = UserDirectoryService.getUserByEid(user);
+        	if(userObj != null && userObj.checkPassword(password)) {
 				DatabaseHelper.getInstance().saveUser(user, template,templateSize);
 				FingerHelper.getInstance().addFingerToCache(user, template, templateSize);
 			}else{
 				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
-				writer.write("No user found with this id. Please create the user first.");
+				writer.write("Invalid username or password. Please try again.");
 				writer.flush();
 				writer.close();
 			}

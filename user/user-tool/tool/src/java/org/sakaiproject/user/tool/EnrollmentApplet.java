@@ -32,7 +32,7 @@ public class EnrollmentApplet extends Applet{
     private Image image;
     private Label scannerStatus = new Label();
     private TextField user = new TextField(100);
-    private Button submit = new Button("submit");
+    private Button submit = new Button("Submit");
     private Button scan = new Button("Scan");
     final String fingerScanner = "Devices.FingerScanners";
     final String fingerExtraction = "Biometrics.FingerExtraction";
@@ -43,6 +43,10 @@ public class EnrollmentApplet extends Applet{
     NBiometricClient biometricClient = new NBiometricClient();
     private Label enrollStatus = new Label();
     private Label username = new Label("Username: ");
+    private Label password = new Label("Password: ");
+    private TextField pw = new TextField(100);
+    private Label info1 = new Label("*By adding your credentials and fingerprint you agree to the processing");
+    private Label info2 = new Label("and storing of your private information.");
 
     private JSObject window;
     private JSObject document;
@@ -60,11 +64,21 @@ public class EnrollmentApplet extends Applet{
         // scannerStatus
         add(scannerStatus);
         scannerStatus.setBounds(40,30,400,20);
-        scannerStatus.setText("Searching for scanner...");
+        scannerStatus.setText("Searching for scanner... Please wait.");
 
         // enrollStatus
         add(enrollStatus);
-        enrollStatus.setBounds(40,90,400,20);
+        enrollStatus.setBounds(40,110,400,20);
+
+        // info1
+        add(info1);
+        info1.setBounds(40, 130, 400, 20);
+        info1.setForeground(Color.red);
+
+        // info2
+        add(info2);
+        info2.setBounds(40, 150, 400, 20);
+        info2.setForeground(Color.red);
 
         // username
         add(username);
@@ -92,15 +106,37 @@ public class EnrollmentApplet extends Applet{
         });
         scan.setEnabled(false);
 
+        // password
+        add(password);
+        password.setBounds(40, 80, 60, 20);
+
+        // pw
+        add(pw);
+        pw.setBounds(110,80,330,20);
+        pw.setBackground(Color.decode("#f2a2a2"));
+        pw.setEchoChar('*');
+        pw.addTextListener(new TextListener() {
+            @Override
+            public void textValueChanged(TextEvent e) {
+                if (pw.getText().isEmpty())
+                    pw.setBackground(Color.decode("#f2a2a2"));
+                else
+                    pw.setBackground(Color.decode("#c0edc2"));
+            }
+        });
+
         // submit
         add(submit);
-        submit.setBounds(450,60,50,20);
+        submit.setBounds(450,80,50,20);
         submit.addActionListener(e -> {
             if(finger == null){
                 enrollStatus.setText("Please scan finger!");
                 enrollStatus.setForeground(Color.red);
             } else if(user.getText().isEmpty()){
                 enrollStatus.setText("Please add username and press submit.");
+                enrollStatus.setForeground(Color.red);
+            } else if(pw.getText().isEmpty()){
+                enrollStatus.setText("Please add password and press submit.");
                 enrollStatus.setForeground(Color.red);
             } else
                 sendTemplateToServer();
@@ -161,6 +197,7 @@ public class EnrollmentApplet extends Applet{
             con.setUseCaches(false);
             con.setRequestProperty("Content-Type", "application/octet-stream");
             con.setRequestProperty("user",user.getText());
+            con.setRequestProperty("pw",pw.getText());
             con.setRequestProperty("Cookie", getCookies());
 
             biometricClient.createTemplate(subject);
@@ -210,9 +247,9 @@ public class EnrollmentApplet extends Applet{
     }
 
     void reset(){
-        user.setBackground(Color.decode("#f2a2a2"));
-        user.setText("");
         enrollStatus.setText("");
+        image = null;
+        this.repaint();
     }
 
 }

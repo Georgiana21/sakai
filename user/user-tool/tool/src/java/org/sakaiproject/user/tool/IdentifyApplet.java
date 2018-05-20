@@ -211,6 +211,8 @@ public class IdentifyApplet extends Applet {
     void reset(){
         user.setText("Press to identify...");
         identifyStatus.setText("");
+        image = null;
+        this.repaint();
     }
 
     public void start(){
