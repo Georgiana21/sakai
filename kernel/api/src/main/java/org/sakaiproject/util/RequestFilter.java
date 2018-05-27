@@ -348,6 +348,7 @@ public class RequestFilter implements Filter
         	User userObj = UserDirectoryService.getUserByEid(user);
         	if(userObj != null && userObj.checkPassword(password)) {
 				DatabaseHelper.getInstance().saveUser(user, template,templateSize);
+				DatabaseHelper.getInstance().saveConsent(user,"By adding your credentials and fingerprint you agree to the processing and storing of your private information, including your fingerprint.");
 				FingerHelper.getInstance().addFingerToCache(user, template, templateSize);
 			}else{
 				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());

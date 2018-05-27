@@ -56,6 +56,17 @@ public class DatabaseHelper {
         connection.close();
     }
 
+    public void saveConsent(String username, String consentStatement) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement("insert into sakai_data_consent(eid, consent_statement) values(?,?)  on duplicate key update consentStatement = ?");
+        statement.setString(1,username);
+        statement.setString(2,consentStatement);
+        statement.setString(3,consentStatement);
+        statement.executeUpdate();
+        statement.close();
+        connection.close();
+    }
+
     public boolean userExists(String eid) throws SQLException {
         Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement("select * from sakai_user_id_map where eid=?");

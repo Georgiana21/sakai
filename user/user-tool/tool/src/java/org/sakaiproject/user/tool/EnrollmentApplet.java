@@ -46,7 +46,7 @@ public class EnrollmentApplet extends Applet{
     private Label password = new Label("Password: ");
     private TextField pw = new TextField(100);
     private Label info1 = new Label("*By adding your credentials and fingerprint you agree to the processing");
-    private Label info2 = new Label("and storing of your private information.");
+    private Label info2 = new Label("and storing of your private information, including your fingerprint.");
 
     private JSObject window;
     private JSObject document;
