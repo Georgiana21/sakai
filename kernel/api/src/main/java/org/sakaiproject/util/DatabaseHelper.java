@@ -58,7 +58,7 @@ public class DatabaseHelper {
 
     public void saveConsent(String username, String consentStatement) throws SQLException {
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement("insert into sakai_data_consent(eid, consent_statement) values(?,?)  on duplicate key update consentStatement = ?");
+        PreparedStatement statement = connection.prepareStatement("insert into sakai_data_consent(eid, consent_statement) values(?,?)  on duplicate key update consent_statement = ?");
         statement.setString(1,username);
         statement.setString(2,consentStatement);
         statement.setString(3,consentStatement);

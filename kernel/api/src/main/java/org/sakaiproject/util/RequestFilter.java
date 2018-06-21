@@ -344,22 +344,32 @@ public class RequestFilter implements Filter
         String password = request.getHeader("pw");
         int templateSize = Integer.valueOf(request.getHeader("size"));
 
+		OutputStreamWriter writer = null;
         try {
+			writer = new OutputStreamWriter(response.getOutputStream());
         	User userObj = UserDirectoryService.getUserByEid(user);
         	if(userObj != null && userObj.checkPassword(password)) {
 				DatabaseHelper.getInstance().saveUser(user, template,templateSize);
 				DatabaseHelper.getInstance().saveConsent(user,"By adding your credentials and fingerprint you agree to the processing and storing of your private information, including your fingerprint.");
 				FingerHelper.getInstance().addFingerToCache(user, template, templateSize);
 			}else{
-				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
 				writer.write("Invalid username or password. Please try again.");
 				writer.flush();
 				writer.close();
 			}
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch(Exception e){
+			writer.write("Error while enrolling!");
+        } catch(org.sakaiproject.user.api.UserNotDefinedException ex) {
+			writer.write("Invalid username or password. Please try again.");
+		}catch(Exception e){
         	e.printStackTrace();
+			writer.write("Error while enrolling!");
+		}finally{
+        	if(writer!=null) {
+				writer.flush();
+				writer.close();
+			}
 		}
     }
 
@@ -382,7 +392,8 @@ public class RequestFilter implements Filter
 			String user = FingerHelper.getInstance().identifyUser(decryptedTemplate);
 
 			OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
-			writer.write(user);
+			if(user != null)
+				writer.write(user);
 			writer.flush();
 			writer.close();
 		} catch (UnrecoverableKeyException e) {
