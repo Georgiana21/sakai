@@ -220,9 +220,13 @@ public class IdentifyApplet extends Applet {
         deviceManager.setDeviceTypes(EnumSet.of(NDeviceType.FINGER_SCANNER));
         deviceManager.setAutoPlug(true);
         deviceManager.initialize();
-        scanner = (NFScanner)deviceManager.getDevices().get(0);
-        scannerStatus.setText("Found scanner: " + scanner.getDisplayName()+ "!") ;
-        scan.setEnabled(true);
+        if(deviceManager.getDevices().size() > 0) {
+            scanner = (NFScanner) deviceManager.getDevices().get(0);
+            scannerStatus.setText("Found scanner: " + scanner.getDisplayName() + "!");
+            scan.setEnabled(true);
+        }else{
+            scannerStatus.setText("No scanner found. Please add scanner and refresh");
+        }
     }
 
     public void paint(Graphics g){

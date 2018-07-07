@@ -301,6 +301,68 @@
 
               </executions>
           </plugin>
+
+          <plugin>
+              <artifactId>maven-resources-plugin</artifactId>
+              <version>2.6</version>
+              <executions>
+                  <execution>
+                      <id>copy-resources</id>
+                      <!-- here the phase you need -->
+                      <phase>install</phase>
+                      <goals>
+                          <goal>copy-resources</goal>
+                      </goals>
+                      <configuration>
+                          <outputDirectory>C:\tomcat\webapps\res\org\sakaiproject\user\tool</outputDirectory>
+                          <resources>
+                              <resource>
+                                  <directory>target\classes\org\sakaiproject\user\tool</directory>
+                                  <includes>
+                                      <include>EnrollmentApplet.class</include>
+                                      <include>EnrollmentApplet$1.class</include>
+                                      <include>EnrollmentApplet$2.class</include>
+                                      <include>IdentifyApplet.class</include>
+                                      <include>LibraryManager.class</include>
+                                  </includes>
+                              </resource>
+                          </resources>
+                      </configuration>
+                  </execution>
+
+                  <execution>
+                      <id>copy-local-resources</id>
+                      <!-- here the phase you need -->
+                      <phase>install</phase>
+                      <goals>
+                          <goal>copy-resources</goal>
+                      </goals>
+                      <configuration>
+                          <outputDirectory>C:\tomcat\webapps\res</outputDirectory>
+                          <resources>
+                              <resource>
+                                  <directory>local_repo</directory>
+                                  <includes>
+                                      <include>ISMCertificateX509.cer</include>
+                                      <include>jna-1.0.0.jar</include>
+                                      <include>neurotec-biometrics-1.0.0.jar</include>
+                                      <include>neurotec-biometrics-client-1.0.0.jar</include>
+                                      <include>neurotec-core-1.0.0.jar</include>
+                                      <include>neurotec-devices-1.0.0.jar</include>
+                                      <include>neurotec-licensing-1.0.0.jar</include>
+                                      <include>neurotec-media-1.0.0.jar</include>
+                                      <include>neurotec-media-processing-1.0.0.jar</include>
+                                      <include>NCore.dll</include>
+                                      <include>NLicensing.dll</include>
+                                      <include>NMedia.dll</include>
+                                  </includes>
+                              </resource>
+                          </resources>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+
       </plugins>
 <!-- java source -->
   </build>

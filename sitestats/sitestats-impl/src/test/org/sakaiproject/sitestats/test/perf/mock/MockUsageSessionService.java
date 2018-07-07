@@ -9,6 +9,7 @@ import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.event.api.UsageSession;
 import org.sakaiproject.event.api.UsageSessionService;
 import org.sakaiproject.user.api.Authentication;
+import org.sakaiproject.user.api.AuthenticationMethod;
 
 public class MockUsageSessionService implements UsageSessionService {
 
@@ -16,6 +17,11 @@ public class MockUsageSessionService implements UsageSessionService {
 	public UsageSession startSession(String userId, String remoteAddress,
 			String userAgent) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UsageSession startSession(String userId, AuthenticationMethod method, String remoteAddress, String userAgent) {
 		return null;
 	}
 
@@ -97,6 +103,11 @@ public class MockUsageSessionService implements UsageSessionService {
 	public boolean login(String uid, String eid, String remoteaddr, String ua,
 			String event) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean login(String uid, String eid, AuthenticationMethod method, String remoteaddr, String ua, String event) {
 		return false;
 	}
 

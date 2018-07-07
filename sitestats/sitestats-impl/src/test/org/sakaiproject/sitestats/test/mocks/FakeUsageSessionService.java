@@ -27,6 +27,7 @@ import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.event.api.UsageSession;
 import org.sakaiproject.event.api.UsageSessionService;
 import org.sakaiproject.user.api.Authentication;
+import org.sakaiproject.user.api.AuthenticationMethod;
 
 public class FakeUsageSessionService implements UsageSessionService {
 
@@ -100,6 +101,11 @@ public class FakeUsageSessionService implements UsageSessionService {
 		return false;
 	}
 
+	@Override
+	public boolean login(String uid, String eid, AuthenticationMethod method, String remoteaddr, String ua, String event) {
+		return false;
+	}
+
 	public void logout() {
 		// TODO Auto-generated method stub
 
@@ -112,6 +118,11 @@ public class FakeUsageSessionService implements UsageSessionService {
 
 	public UsageSession startSession(String arg0, String arg1, String arg2) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UsageSession startSession(String userId, AuthenticationMethod method, String remoteAddress, String userAgent) {
 		return null;
 	}
 

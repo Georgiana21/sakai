@@ -40,6 +40,11 @@ public class FakeSessionManager implements SessionManager {
 		return 0;
 	}
 
+	@Override
+	public Session getSessionByUsageSessionId(String id) {
+		return null;
+	}
+
 	public Session getCurrentSession() {
 		return currentSession;
 	}
@@ -54,6 +59,11 @@ public class FakeSessionManager implements SessionManager {
 
 	public Session getSession(String arg0) {
 		return currentSession;
+	}
+
+	@Override
+	public void addSession(Session session) {
+
 	}
 
 	public String makeSessionId(HttpServletRequest req, Principal principal) {

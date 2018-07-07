@@ -1,0 +1,24 @@
+CREATE TABLE `sakai_user_fingerprint` (
+  `eid` varchar(255) NOT NULL,
+  `fingerprint` blob,
+  `template_size` int(11) DEFAULT NULL,
+  PRIMARY KEY (`eid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `sakai_data_consent` (
+  `eid` varchar(255) NOT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `consent_statement` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`eid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `sakai_user_code_map` (
+  `eid` varchar(255) NOT NULL,
+  `code` varchar(5) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`eid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `sakai_session` 
+ADD COLUMN `SESSION_AUTH_METHOD` VARCHAR(45) NULL;

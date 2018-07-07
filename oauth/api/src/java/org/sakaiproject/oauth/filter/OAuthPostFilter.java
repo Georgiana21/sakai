@@ -1,6 +1,7 @@
 
 package org.sakaiproject.oauth.filter;
 
+import org.sakaiproject.user.api.AuthenticationMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sakaiproject.component.api.ComponentManager;
@@ -80,6 +81,11 @@ public class OAuthPostFilter implements Filter {
                     @Override
                     public String getEid() {
                         return eid;
+                    }
+
+                    @Override
+                    public AuthenticationMethod getMethod() {
+                        return null;
                     }
                 };
 
